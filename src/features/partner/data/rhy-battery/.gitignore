@@ -1,0 +1,7 @@
+# Ignore sensitive RHY Battery data files
+*.xls
+*.xlsx
+*.csv
+
+# Keep the README
+!README.md

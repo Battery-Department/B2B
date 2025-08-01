@@ -1,0 +1,1883 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "."
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String?  @unique
+  name          String?
+  password      String?
+  role          String   @default("customer")
+  externalId    String?
+  mondayUserId  String?
+  copilotUserId String?
+  emailVerified Boolean  @default(false)
+  profileImage  String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  sessions      ChatSession[]
+  messages      Message[]
+  customer      Customer?
+  cart          Cart?
+  savedQuotes   SavedQuote[]
+  oauthAccounts OAuthAccount[]
+
+  @@index([email])
+  @@index([externalId])
+  @@index([mondayUserId])
+  @@index([copilotUserId])
+}
+
+model OAuthAccount {
+  id                String   @id @default(uuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider          String // google, github, etc.
+  providerAccountId String
+  access_token      String?
+  refresh_token     String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model ChatSession {
+  id           String   @id
+  title        String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  systemPrompt String?
+  isActive     Boolean  @default(true)
+
+  // Metadata
+  userId       String?
+  userName     String?
+  userEmail    String?
+  ipAddress    String?
+  location     String?
+  source       String?
+  category     String?
+  mondayItemId String?
+
+  // Sync statuses
+  mondaySynced    Boolean   @default(false)
+  copilotSynced   Boolean   @default(false)
+  databaseSynced  Boolean   @default(true)
+  lastMondaySync  DateTime?
+  lastCopilotSync DateTime?
+
+  // Relations
+  user     User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  messages Message[]
+  tags     SessionTag[]
+
+  @@index([userId])
+  @@index([mondayItemId])
+  @@index([createdAt])
+  @@index([source])
+}
+
+model Message {
+  id        String   @id
+  sessionId String
+  role      String // "user", "assistant", "system", "function"
+  content   String
+  timestamp DateTime @default(now())
+  isError   Boolean? @default(false)
+
+  // Relations
+  session ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  userId  String?
+  user    User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // Function call data if applicable
+  functionName String?
+  functionArgs String? // JSON string
+
+  @@index([sessionId])
+  @@index([timestamp])
+}
+
+model SessionTag {
+  id        String      @id @default(uuid())
+  name      String
+  sessionId String
+  session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  createdAt DateTime    @default(now())
+
+  @@index([sessionId])
+}
+
+// RHY_052: Bulk Order Management Models
+model BulkOrder {
+  id                    String    @id @default(uuid())
+  supplierId            String
+  status                String    @default("DRAFT")
+  totalItems            Int
+  totalQuantity         Int
+  totalValue            Float
+  warehousesInvolved    String // JSON array of warehouse IDs
+  priority              String    @default("MEDIUM")
+  paymentTerms          String?
+  requestedDeliveryDate DateTime?
+  notes                 String?
+
+  // Routing and pricing calculations
+  routingData String? // JSON object with routing details
+  pricingData String? // JSON object with pricing breakdown
+
+  // Progress tracking
+  currentStage       String @default("DRAFT")
+  progressPercentage Float  @default(0)
+
+  // Individual order tracking
+  individualOrderIds  String? // JSON array of created order IDs
+  completedOrderCount Int     @default(0)
+  failedOrderCount    Int     @default(0)
+
+  // Timestamps
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  estimatedCompletion DateTime?
+  actualCompletion    DateTime?
+
+  // Relations
+  items         BulkOrderItem[]
+  reservations  BulkOrderReservation[]
+  notifications BulkOrderNotification[]
+  progressLogs  BulkOrderProgress[]
+
+  @@index([supplierId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model BulkOrderItem {
+  id             String  @id @default(uuid())
+  bulkOrderId    String
+  productId      String
+  sku            String
+  name           String
+  quantity       Int
+  unitPrice      Float
+  lineTotal      Float
+  specifications String? // JSON object
+  customizations String? // JSON object
+  notes          String?
+
+  // Processing status
+  status      String    @default("PENDING")
+  processedAt DateTime?
+  warehouseId String?
+
+  // Relations
+  bulkOrder BulkOrder @relation(fields: [bulkOrderId], references: [id], onDelete: Cascade)
+
+  @@index([bulkOrderId])
+  @@index([productId])
+  @@index([sku])
+}
+
+model BulkOrderReservation {
+  id            String   @id @default(uuid())
+  bulkOrderId   String
+  warehouseId   String
+  productId     String
+  quantity      Int
+  reservationId String   @unique
+  status        String   @default("ACTIVE")
+  expiresAt     DateTime
+  createdAt     DateTime @default(now())
+
+  // Relations
+  bulkOrder BulkOrder @relation(fields: [bulkOrderId], references: [id], onDelete: Cascade)
+
+  @@index([bulkOrderId])
+  @@index([warehouseId])
+  @@index([productId])
+  @@index([reservationId])
+}
+
+model BulkOrderProgress {
+  id          String    @id @default(uuid())
+  bulkOrderId String
+  stage       String
+  status      String // PENDING, IN_PROGRESS, COMPLETED, FAILED
+  startTime   DateTime?
+  endTime     DateTime?
+  details     String?
+  errors      String? // JSON array of error messages
+  metadata    String? // JSON object with stage-specific data
+
+  createdAt DateTime @default(now())
+
+  // Relations
+  bulkOrder BulkOrder @relation(fields: [bulkOrderId], references: [id], onDelete: Cascade)
+
+  @@index([bulkOrderId])
+  @@index([stage])
+  @@index([status])
+}
+
+model BulkOrderNotification {
+  id             String  @id @default(uuid())
+  bulkOrderId    String
+  type           String // STATUS_UPDATE, COMPLETION, ERROR, DELAY, SHIPMENT
+  title          String
+  message        String
+  severity       String // INFO, WARNING, ERROR, SUCCESS
+  actionRequired Boolean @default(false)
+  actionUrl      String?
+  metadata       String? // JSON object
+
+  createdAt DateTime  @default(now())
+  readAt    DateTime?
+
+  // Relations
+  bulkOrder BulkOrder @relation(fields: [bulkOrderId], references: [id], onDelete: Cascade)
+
+  @@index([bulkOrderId])
+  @@index([type])
+  @@index([severity])
+  @@index([createdAt])
+}
+
+model BulkOrderTemplate {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  supplierId  String
+
+  // Template configuration
+  items                  String // JSON array of template items
+  defaultDeliveryAddress String? // JSON object
+  preferredWarehouses    String? // JSON array of warehouse IDs
+  paymentTerms           String?
+  notes                  String?
+
+  // Usage tracking
+  isPublic   Boolean   @default(false)
+  usageCount Int       @default(0)
+  lastUsed   DateTime?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([supplierId])
+  @@index([name])
+  @@index([isPublic])
+}
+
+model BulkOrderSchedule {
+  id          String  @id @default(uuid())
+  bulkOrderId String?
+  templateId  String?
+  supplierId  String
+
+  // Schedule configuration
+  frequency  String // ONCE, DAILY, WEEKLY, MONTHLY, QUARTERLY
+  interval   Int?
+  dayOfWeek  Int?
+  dayOfMonth Int?
+  time       String?
+  timezone   String?
+
+  // Execution tracking
+  nextRun      DateTime
+  lastRun      DateTime?
+  status       String    @default("ACTIVE") // ACTIVE, PAUSED, COMPLETED, FAILED
+  failureCount Int       @default(0)
+  maxFailures  Int       @default(3)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([supplierId])
+  @@index([nextRun])
+  @@index([status])
+}
+
+model BulkOrderApproval {
+  id          String @id @default(uuid())
+  bulkOrderId String @unique
+
+  // Approval configuration
+  requiredApprovals String // JSON array of approval requirements
+  currentApprovals  String // JSON array of current approvals
+  status            String    @default("PENDING") // PENDING, APPROVED, REJECTED, EXPIRED
+  autoApproval      Boolean   @default(false)
+  approvalDeadline  DateTime?
+  escalationRules   String? // JSON array of escalation rules
+
+  // Timestamps
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  approvedAt DateTime?
+
+  @@index([bulkOrderId])
+  @@index([status])
+}
+
+model BulkOrderMetrics {
+  id          String  @id @default(uuid())
+  supplierId  String?
+  warehouseId String?
+
+  // Time period
+  date   DateTime
+  period String // DAILY, WEEKLY, MONTHLY
+
+  // Metrics data
+  totalBulkOrders       Int   @default(0)
+  totalItems            Int   @default(0)
+  totalValue            Float @default(0)
+  averageOrderSize      Float @default(0)
+  averageProcessingTime Int   @default(0) // in seconds
+  successRate           Float @default(0)
+  averageDiscount       Float @default(0)
+
+  // Performance indicators
+  warehouseUtilization Float?
+  inventoryTurnover    Float?
+  customerSatisfaction Float?
+
+  // Additional data
+  metadata String? // JSON object with additional metrics
+
+  createdAt DateTime @default(now())
+
+  @@index([supplierId])
+  @@index([warehouseId])
+  @@index([date])
+  @@index([period])
+}
+
+// RHY_059: Order Integration Services Models
+model OrderIntegration {
+  id            String @id @default(uuid())
+  orderId       String @unique
+  integrationId String @unique
+
+  // Core integration details
+  supplierId    String
+  supplierName  String
+  warehouseId   String
+  warehouseName String
+
+  // Order status and tracking
+  status   String @default("PENDING") // PENDING, PROCESSING, CONFIRMED, FULFILLING, SHIPPED, IN_TRANSIT, DELIVERED, CANCELLED, REFUNDED, RETURNED
+  priority String @default("STANDARD") // STANDARD, EXPRESS, OVERNIGHT
+  urgency  String @default("STANDARD") // STANDARD, EXPRESS, OVERNIGHT
+
+  // Items and totals
+  itemCount     Int
+  totalQuantity Int
+  totalValue    Float
+  currency      String @default("USD")
+
+  // Pricing details
+  subtotal              Float
+  discountPercentage    Float   @default(0)
+  discountAmount        Float   @default(0)
+  discountTier          String?
+  volumeDiscountApplied Boolean @default(false)
+
+  // Shipping information
+  shippingMethod    String // STANDARD, EXPRESS, OVERNIGHT, SAME_DAY, PICKUP
+  shippingCost      Float     @default(0)
+  estimatedDelivery DateTime?
+  actualDelivery    DateTime?
+
+  // Payment information
+  paymentMethod   String // CREDIT_CARD, BANK_TRANSFER, ACH, NET_TERMS, PURCHASE_ORDER
+  paymentStatus   String  @default("PENDING") // PENDING, AUTHORIZED, CAPTURED, FAILED, CANCELLED, REFUNDED, PARTIALLY_REFUNDED
+  authorizationId String?
+  transactionId   String?
+
+  // Tracking information
+  carrier        String?
+  trackingNumber String?
+  trackingUrl    String?
+
+  // Additional information
+  customerNotes String?
+  internalNotes String?
+  metadata      Json? // Additional structured data
+
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  confirmedAt DateTime?
+  shippedAt   DateTime?
+  deliveredAt DateTime?
+
+  // Relations
+  items          OrderIntegrationItem[]
+  trackingEvents OrderIntegrationTracking[]
+  statusHistory  OrderIntegrationStatusHistory[]
+  reservations   OrderIntegrationReservation[]
+
+  @@index([supplierId])
+  @@index([warehouseId])
+  @@index([status])
+  @@index([paymentStatus])
+  @@index([createdAt])
+  @@index([estimatedDelivery])
+}
+
+model OrderIntegrationItem {
+  id                 String           @id @default(uuid())
+  orderIntegrationId String
+  orderIntegration   OrderIntegration @relation(fields: [orderIntegrationId], references: [id], onDelete: Cascade)
+
+  // Product information
+  productId String
+  sku       String
+  name      String
+  quantity  Int
+  unitPrice Float
+  lineTotal Float
+
+  // Warehouse and location
+  warehouseLocation String
+  inventoryReserved Boolean @default(false)
+  reservationId     String?
+
+  // Product specifications
+  specifications Json? // { voltage, capacity, chemistry, weight, dimensions }
+  isHazardous    Boolean @default(false)
+
+  // Fulfillment tracking
+  fulfillmentStatus   String @default("PENDING") // PENDING, RESERVED, PICKED, PACKED, SHIPPED
+  fulfilledQuantity   Int    @default(0)
+  backorderedQuantity Int    @default(0)
+
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  reservedAt  DateTime?
+  fulfilledAt DateTime?
+
+  @@index([orderIntegrationId])
+  @@index([productId])
+  @@index([sku])
+  @@index([fulfillmentStatus])
+}
+
+model OrderIntegrationTracking {
+  id                 String           @id @default(uuid())
+  orderIntegrationId String
+  orderIntegration   OrderIntegration @relation(fields: [orderIntegrationId], references: [id], onDelete: Cascade)
+
+  // Tracking event details
+  eventType   String // ORDER_CREATED, STATUS_CHANGE, SHIPMENT_CREATED, LOCATION_UPDATE, DELIVERY_ATTEMPT, DELIVERED
+  status      String
+  location    String?
+  description String
+
+  // Carrier information
+  carrier        String?
+  trackingNumber String?
+
+  // Location details
+  city         String?
+  state        String?
+  country      String?
+  facilityType String?
+
+  // Delivery information
+  deliveryAttempts Int     @default(0)
+  signedBy         String?
+  deliveryLocation String?
+
+  // Additional data
+  metadata Json?
+
+  // Timestamps
+  timestamp DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  @@index([orderIntegrationId])
+  @@index([eventType])
+  @@index([status])
+  @@index([timestamp])
+  @@index([trackingNumber])
+}
+
+model OrderIntegrationStatusHistory {
+  id                 String           @id @default(uuid())
+  orderIntegrationId String
+  orderIntegration   OrderIntegration @relation(fields: [orderIntegrationId], references: [id], onDelete: Cascade)
+
+  // Status change details
+  previousStatus String?
+  newStatus      String
+  reason         String?
+  triggeredBy    String? // USER, SYSTEM, INTEGRATION
+
+  // Context information
+  warehouseId  String?
+  systemSource String? // WMS, ERP, SHIPPING_CARRIER, PAYMENT_PROCESSOR
+
+  // Additional details
+  metadata Json?
+
+  // Timestamps
+  timestamp DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  @@index([orderIntegrationId])
+  @@index([newStatus])
+  @@index([timestamp])
+  @@index([triggeredBy])
+}
+
+model OrderIntegrationReservation {
+  id                 String @id @default(uuid())
+  orderIntegrationId String
+  warehouseId        String
+  productId          String
+  sku                String
+  quantity           Int
+  reservationId      String @unique
+
+  // Reservation details
+  status   String @default("ACTIVE") // ACTIVE, RELEASED, EXPIRED, FULFILLED
+  priority String @default("STANDARD") // STANDARD, HIGH, URGENT
+
+  // Timestamps
+  reservedAt  DateTime  @default(now())
+  expiresAt   DateTime
+  releasedAt  DateTime?
+  fulfilledAt DateTime?
+
+  // Relations
+  orderIntegration OrderIntegration @relation(fields: [orderIntegrationId], references: [id], onDelete: Cascade)
+
+  @@index([orderIntegrationId])
+  @@index([warehouseId])
+  @@index([productId])
+  @@index([sku])
+  @@index([reservationId])
+  @@index([status])
+  @@index([expiresAt])
+}
+
+model OrderIntegrationConfiguration {
+  id            String  @id @default(uuid())
+  configType    String // WAREHOUSE, SHIPPING, PAYMENT, BUSINESS_RULES
+  warehouseId   String?
+  carrier       String?
+  paymentMethod String?
+
+  // Configuration data
+  configuration Json // Structured configuration data
+  version       String @default("1.0")
+
+  // Lifecycle management
+  isActive       Boolean   @default(true)
+  effectiveDate  DateTime  @default(now())
+  expirationDate DateTime?
+
+  // Change management
+  reason       String?
+  approvedBy   String?
+  rollbackPlan String?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([configType])
+  @@index([warehouseId])
+  @@index([carrier])
+  @@index([paymentMethod])
+  @@index([isActive])
+  @@index([effectiveDate])
+}
+
+model OrderIntegrationMetrics {
+  id String @id @default(uuid())
+
+  // Scope and time period
+  supplierId  String?
+  warehouseId String?
+  carrier     String?
+  date        DateTime
+  period      String // HOURLY, DAILY, WEEKLY, MONTHLY
+
+  // Order processing metrics
+  totalOrders       Int   @default(0)
+  totalItems        Int   @default(0)
+  totalValue        Float @default(0)
+  averageOrderValue Float @default(0)
+
+  // Performance metrics
+  averageProcessingTime Int   @default(0) // in milliseconds
+  successRate           Float @default(0) // percentage
+  errorRate             Float @default(0) // percentage
+
+  // Fulfillment metrics
+  fulfillmentRate     Float @default(0) // percentage
+  averageShippingTime Int   @default(0) // in hours
+  onTimeDeliveryRate  Float @default(0) // percentage
+
+  // Financial metrics
+  averageDiscount     Float @default(0) // percentage
+  totalDiscountAmount Float @default(0)
+  revenueGrowth       Float @default(0) // percentage
+
+  // Operational metrics
+  warehouseUtilization Float? // percentage
+  inventoryTurnover    Float?
+  customerSatisfaction Float? // rating out of 5
+
+  // Status distribution
+  statusCounts    Json? // { PENDING: 5, PROCESSING: 10, ... }
+  warehouseCounts Json? // { US: 20, JP: 15, ... }
+  carrierCounts   Json? // { FEDEX: 10, UPS: 8, ... }
+
+  // Additional metrics data
+  metadata Json?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+
+  @@index([supplierId])
+  @@index([warehouseId])
+  @@index([carrier])
+  @@index([date])
+  @@index([period])
+}
+
+// For Monday.com integration
+model MondaySync {
+  id         String   @id @default(uuid())
+  sessionId  String   @unique
+  itemId     String
+  boardId    String
+  lastSynced DateTime @default(now())
+
+  @@index([itemId])
+  @@index([boardId])
+}
+
+// Battery Department E-commerce Models Extension
+// This extends the existing schema with commerce functionality
+
+model Customer {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  // Customer Details
+  companyName     String?
+  billingAddress  Json? // { street, city, state, zip, country }
+  shippingAddress Json? // { street, city, state, zip, country }
+  taxId           String?
+  phoneNumber     String?
+
+  // Payment
+  stripeCustomerId String?         @unique
+  paymentMethods   PaymentMethod[]
+
+  // Relationships
+  orders        Order[]
+  subscriptions Subscription[]
+  invoices      Invoice[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([stripeCustomerId])
+}
+
+model Product {
+  id          String  @id @default(uuid())
+  sku         String  @unique
+  name        String
+  description String?
+  category    String // "battery", "module", "pack", "accessory"
+
+  // Pricing
+  basePrice Float
+  currency  String @default("USD")
+
+  // Specifications
+  specifications Json? // { voltage, capacity, chemistry, weight, dimensions }
+  images         Json? // JSON array of image URLs
+
+  // Inventory
+  inventoryItems Inventory[]
+
+  // Relationships
+  orderItems   OrderItem[]
+  cartItems    CartItem[]
+  priceHistory PriceHistory[]
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([sku])
+}
+
+model Order {
+  id          String @id @default(uuid())
+  orderNumber String @unique
+
+  // Customer
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  // Order Details
+  status String      @default("pending") // pending, processing, shipped, delivered, cancelled
+  items  OrderItem[]
+
+  // Totals
+  subtotal Float
+  tax      Float
+  shipping Float
+  total    Float
+  currency String @default("USD")
+
+  // Shipping
+  shippingAddress Json?
+  shippingMethod  String?
+  trackingNumber  String?
+  shippedAt       DateTime?
+  deliveredAt     DateTime?
+
+  // Payment
+  paymentStatus   String    @default("pending") // pending, paid, failed, refunded
+  paymentIntentId String?   @unique
+  paidAt          DateTime?
+
+  // Notes
+  customerNotes String?
+  internalNotes String?
+
+  // Invoice
+  invoiceId String?  @unique
+  invoice   Invoice? @relation(fields: [invoiceId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orderNumber])
+  @@index([customerId])
+  @@index([status])
+  @@index([paymentIntentId])
+}
+
+model OrderItem {
+  id String @id @default(uuid())
+
+  // Order
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  // Product
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  // Details
+  quantity   Int
+  unitPrice  Float
+  totalPrice Float
+
+  // Product snapshot at time of order
+  productSnapshot Json? // { name, sku, specifications }
+
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model Subscription {
+  id String @id @default(uuid())
+
+  // Customer
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  // Subscription Details
+  status String           @default("active") // active, paused, cancelled, expired
+  planId String
+  plan   SubscriptionPlan @relation(fields: [planId], references: [id])
+
+  // Billing
+  billingCycle       String   @default("monthly") // monthly, quarterly, yearly
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  nextBillingDate    DateTime
+
+  // Stripe
+  stripeSubscriptionId String? @unique
+
+  // Metadata
+  metadata     Json?
+  cancelledAt  DateTime?
+  cancelReason String?
+
+  // Invoices
+  invoices Invoice[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([customerId])
+  @@index([status])
+  @@index([stripeSubscriptionId])
+}
+
+model SubscriptionPlan {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+
+  // Pricing
+  price    Float
+  currency String @default("USD")
+  interval String @default("month") // month, quarter, year
+
+  // Features
+  features Json? // Array of feature descriptions
+
+  // Limits
+  limits Json? // { maxOrders, maxProducts, features }
+
+  subscriptions Subscription[]
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Invoice {
+  id            String @id @default(uuid())
+  invoiceNumber String @unique
+
+  // Customer
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  // Type
+  type String // "order", "subscription"
+
+  // Related entities
+  order          Order?
+  subscriptionId String?
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
+
+  // Amounts
+  subtotal Float
+  tax      Float
+  total    Float
+  currency String @default("USD")
+
+  // Status
+  status  String    @default("pending") // pending, paid, overdue, cancelled
+  dueDate DateTime
+  paidAt  DateTime?
+
+  // Payment
+  paymentIntentId String? @unique
+  paymentMethod   String?
+
+  // PDF
+  pdfUrl String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([customerId])
+  @@index([invoiceNumber])
+  @@index([status])
+}
+
+model PaymentMethod {
+  id String @id @default(uuid())
+
+  // Customer
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  // Stripe
+  stripePaymentMethodId String @unique
+
+  // Details
+  type        String // "card", "bank_account"
+  last4       String
+  brand       String? // For cards: visa, mastercard, etc
+  expiryMonth Int? // For cards
+  expiryYear  Int? // For cards
+
+  isDefault Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([customerId])
+  @@index([stripePaymentMethodId])
+}
+
+model Inventory {
+  id String @id @default(uuid())
+
+  // Product
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  // Location
+  location String // warehouse location
+
+  // Quantities
+  quantity          Int @default(0)
+  reservedQuantity  Int @default(0)
+  availableQuantity Int @default(0)
+  reorderPoint      Int @default(10)
+  reorderQuantity   Int @default(50)
+
+  // Tracking
+  batchNumber   String?
+  serialNumbers Json? // JSON array of serial numbers
+
+  lastRestocked DateTime?
+  lastCounted   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([productId, location])
+  @@index([productId])
+  @@index([location])
+}
+
+model Cart {
+  id String @id @default(uuid())
+
+  // Session or User
+  sessionId String? @unique
+  userId    String? @unique
+  user      User?   @relation(fields: [userId], references: [id])
+
+  items CartItem[]
+
+  expiresAt DateTime // Auto-cleanup after 30 days
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sessionId])
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model SavedQuote {
+  id      String @id @default(uuid())
+  quoteId String @unique
+
+  // Customer
+  customerId    String?
+  customerName  String?
+  customerEmail String?
+  userId        String?
+  user          User?   @relation(fields: [userId], references: [id])
+
+  // Quote Details
+  items      Json // Array of { id, type, name, quantity, unitPrice, total }
+  quantities Json // Original format { '6Ah': 0, '9Ah': 0, '15Ah': 0 }
+
+  // Pricing
+  subtotal           Float
+  discountAmount     Float  @default(0)
+  discountPercentage Float  @default(0)
+  total              Float
+  currency           String @default("USD")
+
+  // Status
+  status     String   @default("active") // active, expired, converted
+  validUntil DateTime
+
+  // Conversion tracking
+  convertedToOrderId String?
+  convertedAt        DateTime?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([customerId])
+  @@index([userId])
+  @@index([status])
+  @@index([validUntil])
+  @@index([createdAt])
+}
+
+model CartItem {
+  id String @id @default(uuid())
+
+  cartId String
+  cart   Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  quantity Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cartId, productId])
+  @@index([cartId])
+  @@index([productId])
+}
+
+model PriceHistory {
+  id String @id @default(uuid())
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  price         Float
+  previousPrice Float?
+  currency      String @default("USD")
+
+  reason String? // "market adjustment", "promotion", etc
+
+  effectiveFrom  DateTime
+  effectiveUntil DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+  @@index([effectiveFrom])
+}
+
+model SystemHealth {
+  id           String    @id @default(uuid())
+  service      String    @unique
+  status       String // "healthy", "degraded", "unhealthy"
+  responseTime Float?
+  errorRate    Float?    @default(0)
+  uptime       Float?    @default(100)
+  message      String?
+  lastCheck    DateTime  @default(now())
+  nextCheck    DateTime?
+  metadata     Json? // Additional metadata
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([service])
+  @@index([status])
+}
+
+model Notification {
+  id       String    @id @default(uuid())
+  userId   String?
+  type     String // "system", "order", "chat", "alert"
+  title    String
+  message  String
+  priority String    @default("low") // "low", "medium", "high", "critical"
+  channel  String    @default("in-app") // "in-app", "email", "sms", "push"
+  read     Boolean   @default(false)
+  readAt   DateTime?
+  metadata Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([type])
+  @@index([read])
+  @@index([createdAt])
+}
+
+// Enhanced Analytics Models
+model AnalyticsEvent {
+  id            String   @id @default(uuid())
+  sessionId     String
+  userId        String?
+  eventName     String
+  eventCategory String
+  eventData     Json // Compressed event-specific data
+  dataPoints    Json // Compressed data points (150+ tracked)
+  context       Json // Page, referrer, device info, etc.
+  timestamp     DateTime
+  createdAt     DateTime @default(now())
+
+  @@index([sessionId])
+  @@index([userId])
+  @@index([eventName])
+  @@index([eventCategory])
+  @@index([timestamp])
+  @@index([createdAt])
+}
+
+model AnalyticsSession {
+  id        String    @id @default(uuid())
+  userId    String?
+  visitorId String? // For anonymous users
+  startTime DateTime
+  endTime   DateTime?
+  duration  Int? // In seconds
+  pageViews Int       @default(0)
+  events    Int       @default(0)
+  bounced   Boolean   @default(false)
+
+  // Attribution data
+  source   String? // utm_source or referrer
+  medium   String? // utm_medium
+  campaign String? // utm_campaign
+  content  String? // utm_content
+  term     String? // utm_term
+
+  // Device/Browser
+  deviceType       String?
+  deviceBrand      String?
+  browser          String?
+  os               String?
+  screenResolution String?
+
+  // Geographic
+  country String?
+  region  String?
+  city    String?
+
+  // Aggregated metrics
+  engagementScore Float?
+  conversionValue Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([visitorId])
+  @@index([startTime])
+  @@index([source])
+  @@index([country])
+}
+
+model AnalyticsMetric {
+  id          String @id @default(uuid())
+  name        String @unique
+  type        String // count, sum, average, etc.
+  category    String // engagement, conversion, technical, etc.
+  calculation Json // Metric calculation definition
+
+  // Cached aggregations for performance
+  dailyValues   Json? // Last 30 days
+  weeklyValues  Json? // Last 12 weeks
+  monthlyValues Json? // Last 12 months
+
+  lastCalculated DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([name])
+  @@index([category])
+}
+
+model AnalyticsCohort {
+  id         String @id @default(uuid())
+  name       String @unique
+  definition Json // Cohort definition (filters, conditions)
+  userCount  Int    @default(0)
+
+  // Cached metrics
+  retentionData  Json? // Retention by day/week/month
+  engagementData Json? // Average engagement metrics
+  revenueData    Json? // Revenue metrics
+
+  lastUpdated DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([name])
+}
+
+model AnalyticsFunnel {
+  id    String @id @default(uuid())
+  name  String @unique
+  steps Json // Funnel step definitions
+
+  // Cached conversion data
+  conversionRates Json? // Conversion rate per step
+  dropoffRates    Json? // Dropoff rate per step
+  avgTimePerStep  Json? // Average time per step
+
+  lastCalculated DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([name])
+}
+
+model AnalyticsAttribution {
+  id              String  @id @default(uuid())
+  userId          String
+  conversionId    String? // Order ID, subscription ID, etc.
+  conversionType  String // purchase, subscription, lead, etc.
+  conversionValue Float?
+
+  // Attribution data
+  touchpoints    Json // Array of touchpoints with timestamps
+  model          String // firstTouch, lastTouch, linear, etc.
+  channelWeights Json // Weight per channel based on model
+
+  convertedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([userId])
+  @@index([conversionType])
+  @@index([convertedAt])
+}
+
+model AnalyticsSegment {
+  id         String @id @default(uuid())
+  name       String @unique
+  type       String // behavioral, demographic, technographic, etc.
+  conditions Json // Segment conditions
+  userCount  Int    @default(0)
+
+  // Performance metrics
+  avgEngagement  Float?
+  avgRevenue     Float?
+  conversionRate Float?
+
+  lastUpdated DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([name])
+  @@index([type])
+}
+
+model AnalyticsReport {
+  id         String @id @default(uuid())
+  name       String
+  type       String // dashboard, export, scheduled, etc.
+  definition Json // Report configuration
+
+  // Scheduling
+  schedule String? // cron expression
+  lastRun  DateTime?
+  nextRun  DateTime?
+
+  // Distribution
+  recipients Json? // Email addresses
+  format     String @default("pdf") // pdf, csv, excel
+
+  createdBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([type])
+  @@index([createdBy])
+}
+
+// Performance Metrics Tables for RHY_063
+model PerformanceMetric {
+  id          String   @id @default(uuid())
+  warehouseId String
+  metricType  String // EFFICIENCY, THROUGHPUT, QUALITY, CUSTOMER_SATISFACTION, COST_PER_UNIT
+  value       Float
+  target      Float
+  variance    Float
+  trend       String // INCREASING, STABLE, DECREASING
+  period      String // 24h, 7d, 30d, 90d
+  recordedAt  DateTime @default(now())
+  metadata    Json? // Additional metric-specific data
+
+  createdAt DateTime @default(now())
+
+  @@index([warehouseId])
+  @@index([metricType])
+  @@index([recordedAt])
+  @@index([period])
+}
+
+model ExecutiveKPI {
+  id                 String   @id @default(uuid())
+  kpiName            String
+  warehouseId        String?
+  currentValue       Float
+  targetValue        Float
+  variancePercentage Float
+  trend              String // UP, DOWN, STABLE
+  sparklineData      Json // Array of {date, value} objects
+  lastUpdated        DateTime @default(now())
+  drillDownUrl       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([kpiName])
+  @@index([warehouseId])
+  @@index([lastUpdated])
+}
+
+model PerformanceDashboard {
+  id                  String @id @default(uuid())
+  userId              String
+  dashboardType       String // EXECUTIVE, OPERATIONAL, CUSTOM
+  configuration       Json // Dashboard configuration
+  summary             Json // Overall performance summary
+  kpis                Json // KPI data
+  warehouseComparison Json // Warehouse comparison data
+  realTimeMetrics     Json // Real-time metrics
+
+  generatedAt DateTime @default(now())
+  expiresAt   DateTime
+
+  @@index([userId])
+  @@index([dashboardType])
+  @@index([generatedAt])
+}
+
+model RealtimeMetric {
+  id          String   @id @default(uuid())
+  warehouseId String
+  metricName  String // orders_processed, avg_processing_time, error_rate, system_load
+  value       Float
+  unit        String? // seconds, percentage, count
+  timestamp   DateTime @default(now())
+
+  @@index([warehouseId])
+  @@index([metricName])
+  @@index([timestamp])
+}
+
+model PerformanceAlert {
+  id           String    @id @default(uuid())
+  warehouseId  String
+  metricType   String
+  alertType    String // THRESHOLD_EXCEEDED, TREND_NEGATIVE, ANOMALY_DETECTED
+  severity     String // LOW, MEDIUM, HIGH, CRITICAL
+  message      String
+  threshold    Float?
+  currentValue Float
+  isResolved   Boolean   @default(false)
+  resolvedAt   DateTime?
+  resolvedBy   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([warehouseId])
+  @@index([alertType])
+  @@index([severity])
+  @@index([isResolved])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id         String  @id @default(uuid())
+  action     String
+  entityType String
+  entityId   String?
+  userId     String?
+  ipAddress  String?
+  userAgent  String?
+  details    Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([action])
+  @@index([entityType])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// Quiz Intelligence System Models
+model QuizSession {
+  id               String                  @id @default(cuid())
+  sessionId        String                  @unique
+  quizId           String
+  source           String?
+  utmSource        String?
+  utmMedium        String?
+  utmCampaign      String?
+  utmContent       String?
+  contentId        String?
+  campaignId       String?
+  deviceInfo       Json?
+  landingPage      String?
+  ipAddress        String?
+  userAgent        String?
+  status           String                  @default("in_progress")
+  createdAt        DateTime                @default(now())
+  startTime        DateTime                @default(now())
+  endTime          DateTime?
+  completionRate   Float?
+  userName         String?
+  email            String?
+  phoneNumber      String?
+  companyName      String? // Added for B2B
+  userType         String? // 'professional' or 'personal'
+  selectedBrand    String? // Brand they selected
+  userSegment      String? // Trade for professionals
+  crewSize         Int? // Team size for professionals
+  leadQualityScore Float? // 0.0 to 1.0 scoring
+  version          String? // Quiz version tracking
+  responses        QuizResponse[]
+  interactions     BehavioralInteraction[]
+  conversions      QuizConversion[]
+
+  @@index([sessionId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([selectedBrand])
+  @@index([userType])
+  @@index([leadQualityScore])
+}
+
+model QuizResponse {
+  id            String      @id @default(cuid())
+  sessionId     String
+  session       QuizSession @relation(fields: [sessionId], references: [sessionId], onDelete: Cascade)
+  questionId    String
+  questionType  String
+  responseValue Json
+  responseTime  Int? // milliseconds to answer
+  createdAt     DateTime    @default(now())
+
+  @@index([sessionId])
+  @@index([questionId])
+}
+
+model BehavioralInteraction {
+  id              String      @id @default(cuid())
+  sessionId       String
+  session         QuizSession @relation(fields: [sessionId], references: [sessionId], onDelete: Cascade)
+  interactionType String // click, hover, scroll, hesitation, etc
+  element         String?
+  position        Json? // {x, y} coordinates
+  viewport        Json? // {width, height}
+  duration        Int? // milliseconds
+  metadata        Json?
+  timestamp       DateTime    @default(now())
+
+  @@index([sessionId])
+  @@index([interactionType])
+  @@index([timestamp])
+}
+
+model QuizConversion {
+  id              String      @id @default(cuid())
+  sessionId       String
+  session         QuizSession @relation(fields: [sessionId], references: [sessionId])
+  conversionType  String // 'lead', 'purchase', 'portal_signup'
+  conversionValue Float?
+  orderId         String?
+  metadata        Json?
+  createdAt       DateTime    @default(now())
+
+  @@index([sessionId])
+  @@index([conversionType])
+}
+
+model ABTestExperiment {
+  id         String    @id @default(cuid())
+  name       String
+  status     String    @default("draft") // draft, running, paused, completed
+  startDate  DateTime?
+  endDate    DateTime?
+  testType   String // question_order, wording, design, flow
+  control    Json // Control configuration
+  variants   Json // Array of variant configurations
+  allocation Json // Traffic allocation percentages
+  metrics    Json // Tracked metrics and goals
+  results    Json? // Experiment results
+  winner     String? // Winning variant ID
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([status])
+}
+
+model QuizBrand {
+  id             String   @id @default(cuid())
+  brandId        String   @unique
+  name           String
+  displayName    String
+  color          String
+  voltage        String
+  voltageOptions Json // Array of voltage platforms
+  marketShare    Float?
+  popularWith    Json? // Array of trades
+  category       String? // professional, diy, outdoor
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+
+  @@index([brandId])
+  @@index([category])
+}
+
+model QuizRoutingRule {
+  id             String   @id @default(cuid())
+  userType       String?
+  brand          String?
+  trade          String?
+  nextQuestionId String
+  condition      Json? // Complex routing conditions
+  priority       Int      @default(0)
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+
+  @@index([userType, brand, trade])
+}
+
+model QuizIntervention {
+  id               String    @id @default(cuid())
+  sessionId        String
+  interventionType String
+  triggerReason    String
+  questionId       String?
+  shownAt          DateTime  @default(now())
+  userAction       String? // engaged, dismissed, ignored
+  actionTimestamp  DateTime?
+
+  @@index([sessionId])
+  @@index([interventionType])
+}
+
+// Additional models for AI services integration
+model UserBehavior {
+  id        String   @id @default(uuid())
+  userId    String
+  sessionId String
+  timestamp DateTime
+  event     String // page_view, click, search, add_to_cart, purchase, quiz_response
+  data      Json // Event-specific data
+  context   Json // Page, userAgent, device info
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([sessionId])
+  @@index([event])
+  @@index([timestamp])
+}
+
+model UserSession {
+  id           String   @id @default(uuid())
+  sessionId    String   @unique
+  userId       String
+  startTime    DateTime
+  lastActivity DateTime
+  eventCount   Int      @default(0)
+  device       String // mobile, tablet, desktop
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sessionId])
+  @@index([userId])
+  @@index([lastActivity])
+}
+
+model ProductMetrics {
+  id          String   @id @default(uuid())
+  productId   String   @unique
+  views       Int      @default(0)
+  clicks      Int      @default(0)
+  addToCarts  Int      @default(0)
+  purchases   Int      @default(0)
+  revenue     Float    @default(0)
+  lastUpdated DateTime @default(now())
+
+  @@index([productId])
+}
+
+model ProductInventory {
+  id               String   @id @default(uuid())
+  productId        String   @unique
+  quantity         Int      @default(0)
+  reservedQuantity Int      @default(0)
+  lastUpdated      DateTime @default(now())
+
+  @@index([productId])
+}
+
+model UserPurchaseHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  productId String
+  quantity  Int
+  price     Float
+  timestamp DateTime
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([productId])
+  @@index([timestamp])
+}
+
+// Enhanced models for Terminal 2 backend completion
+model Document {
+  id         String  @id @default(uuid())
+  customerId String?
+  orderId    String?
+  invoiceId  String?
+  type       String // invoice, receipt, contract, shipping_label
+  filename   String
+  mimeType   String
+  size       Int
+  url        String
+  metadata   Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([customerId])
+  @@index([orderId])
+  @@index([type])
+}
+
+model ShippingAddress {
+  id           String  @id @default(uuid())
+  customerId   String
+  name         String
+  company      String?
+  addressLine1 String
+  addressLine2 String?
+  city         String
+  state        String
+  postalCode   String
+  country      String  @default("US")
+  phone        String?
+  isDefault    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([customerId])
+}
+
+model DealerSubscription {
+  id               String @id @default(uuid())
+  customerId       String
+  tier             String // bronze, silver, gold, platinum
+  status           String @default("active") // active, suspended, cancelled
+  volumeCommitment Int? // Monthly volume commitment
+  discountRate     Float  @default(0.05) // 5% default discount
+  paymentTerms     String @default("net_30") // net_30, net_60, etc
+  creditLimit      Float?
+
+  startDate      DateTime
+  endDate        DateTime?
+  nextReviewDate DateTime?
+
+  metadata Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([customerId])
+  @@index([status])
+  @@index([tier])
+}
+
+model BillingRecord {
+  id             String    @id @default(uuid())
+  customerId     String
+  subscriptionId String?
+  orderId        String?
+  type           String // monthly_fee, usage_charge, one_time, credit
+  amount         Float
+  currency       String    @default("USD")
+  description    String
+  periodStart    DateTime?
+  periodEnd      DateTime?
+
+  status      String    @default("pending") // pending, processed, failed
+  processedAt DateTime?
+
+  metadata Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([customerId])
+  @@index([subscriptionId])
+  @@index([status])
+  @@index([type])
+}
+
+model Webhook {
+  id       String  @id @default(uuid())
+  url      String
+  events   Json // Array of event types to listen for
+  secret   String?
+  isActive Boolean @default(true)
+
+  // Delivery tracking
+  lastDeliveryAt DateTime?
+  successCount   Int       @default(0)
+  failureCount   Int       @default(0)
+
+  metadata Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+}
+
+model BackgroundJob {
+  id       String @id @default(uuid())
+  type     String // email_send, inventory_sync, report_generation, cleanup
+  status   String @default("pending") // pending, running, completed, failed, retrying
+  priority Int    @default(5) // 1 (highest) to 10 (lowest)
+
+  payload Json? // Job-specific data
+  result  Json? // Job result or error details
+
+  scheduledFor DateTime  @default(now())
+  startedAt    DateTime?
+  completedAt  DateTime?
+
+  attempts    Int       @default(0)
+  maxAttempts Int       @default(3)
+  nextRetryAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([type])
+  @@index([status])
+  @@index([priority])
+  @@index([scheduledFor])
+}
+
+// Support Ticketing System Models - RHY_068
+model SupportTicket {
+  id              String    @id @default(uuid())
+  ticketNumber    String    @unique
+  supplierId      String
+  title           String
+  description     String
+  category        String // TECHNICAL_SUPPORT, BILLING_INQUIRY, ORDER_ISSUE, etc.
+  priority        String    @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
+  status          String    @default("OPEN") // OPEN, IN_PROGRESS, RESOLVED, CLOSED
+  warehouseId     String?
+  orderId         String?
+  productId       String?
+  assignedTo      String?
+  resolution      String?
+  escalationLevel Int       @default(0)
+  lastActivityAt  DateTime  @default(now())
+  resolvedAt      DateTime?
+  closedAt        DateTime?
+  metadata        Json? // Additional ticket metadata
+
+  // Relations
+  comments    TicketComment[]
+  attachments TicketAttachment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([supplierId])
+  @@index([status])
+  @@index([priority])
+  @@index([category])
+  @@index([warehouseId])
+  @@index([assignedTo])
+  @@index([lastActivityAt])
+  @@index([createdAt])
+}
+
+model TicketComment {
+  id         String        @id @default(uuid())
+  ticketId   String
+  ticket     SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  authorId   String
+  authorType String // SUPPLIER, SUPPORT_AGENT, SYSTEM
+  content    String
+  isInternal Boolean       @default(false)
+
+  // Relations
+  attachments TicketAttachment[]
+
+  createdAt DateTime @default(now())
+
+  @@index([ticketId])
+  @@index([authorId])
+  @@index([authorType])
+  @@index([isInternal])
+  @@index([createdAt])
+}
+
+model TicketAttachment {
+  id               String         @id @default(uuid())
+  ticketId         String?
+  ticket           SupportTicket? @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  commentId        String?
+  comment          TicketComment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  filename         String
+  originalFilename String
+  url              String
+  size             Int
+  mimeType         String
+  uploadedBy       String
+  uploadedAt       DateTime       @default(now())
+
+  @@index([ticketId])
+  @@index([commentId])
+  @@index([uploadedBy])
+  @@index([uploadedAt])
+}
+
+// RHY Enhanced Notification System Models - RHY_069
+// Note: Basic RHYNotification model exists in schema-rhy-supplier.prisma
+// These extend the notification system with additional functionality
+
+model RHYNotificationPreferences {
+  id                  String  @id @default(uuid())
+  supplierId          String  @unique
+  emailEnabled        Boolean @default(true)
+  smsEnabled          Boolean @default(false)
+  pushEnabled         Boolean @default(true)
+  inAppEnabled        Boolean @default(true)
+  warehouseAlerts     Boolean @default(true)
+  orderUpdates        Boolean @default(true)
+  systemNotifications Boolean @default(true)
+  securityAlerts      Boolean @default(true)
+  promotionalContent  Boolean @default(false)
+  quietHours          Json? // { enabled, startHour, endHour, timezone }
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([supplierId])
+}

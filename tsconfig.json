@@ -1,0 +1,93 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "noUncheckedIndexedAccess": false,
+    "exactOptionalPropertyTypes": false,
+    "noImplicitReturns": false,
+    "noImplicitOverride": false,
+    "noPropertyAccessFromIndexSignature": false,
+    "useUnknownInCatchVariables": false,
+    "forceConsistentCasingInFileNames": true,
+    "verbatimModuleSyntax": false,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/lib/*": ["./src/lib/*"],
+      "@/types/*": ["./src/types/*"],
+      "@/services/*": ["./src/services/*"],
+      "@/hooks/*": ["./src/hooks/*"],
+      "@/utils/*": ["./src/utils/*"],
+      "@/styles/*": ["./src/styles/*"]
+    },
+    "types": ["node", "jest"],
+    "baseUrl": ".",
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false,
+    "removeComments": true,
+    "importHelpers": true,
+    "downlevelIteration": true,
+    "experimentalDecorators": false,
+    "emitDecoratorMetadata": false,
+    "newLine": "lf"
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "src/**/*",
+    "scripts/**/*",
+    "cypress/**/*",
+    "__tests__/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    ".next",
+    "dist",
+    "build",
+    "coverage",
+    "*.config.js",
+    "*.config.ts",
+    "public/**/*",
+    "cypress/videos",
+    "cypress/screenshots",
+    "mobile/**/*",
+    "__tests__/integration/cross-terminal.test.ts",
+    "src/state/optimistic/OptimisticUpdates.ts",
+    "src/state/persistence/StatePersistence.ts",
+    "src/state/websocket/WebSocketManager.ts",
+    "src/testing/component-testing/ComponentTestingSuite.ts",
+    "src/utils/bundleOptimization.ts",
+    "src/components/dashboard/executive/StrategicInsights.tsx",
+    "src/components/performance/PerformanceMonitor.tsx",
+    "src/hooks/useTheme.ts",
+    "src/monitoring/ComponentPerformanceMonitor.ts",
+    "src/services/analytics/quality-metrics.ts",
+    "**/*.backup.*",
+    "**/*.disabled.*"
+  ],
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs",
+      "target": "es2020"
+    }
+  }
+}

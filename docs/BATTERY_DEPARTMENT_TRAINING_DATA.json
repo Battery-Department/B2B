@@ -1,0 +1,1046 @@
+{
+  "company": {
+    "name": "Battery Department",
+    "tagline": "Professional Power Tools. Protected.",
+    "domain": "batterydpt.com",
+    "industry": "B2B E-commerce - Custom Battery Solutions",
+    "target_market": "Construction contractors and professional tradespeople",
+    "founded": "2024",
+    "headquarters": "USA",
+    "business_model": "Direct-to-contractor custom battery manufacturing with theft protection"
+  },
+  
+  "brand_identity": {
+    "logo": {
+      "primary": "Blue 'B' in rounded square",
+      "style": "Modern, professional, tech-forward",
+      "usage": "Header, marketing materials, battery engravings"
+    },
+    "colors": {
+      "primary": {
+        "blue": "#006FEE",
+        "dark_blue": "#0050B3",
+        "description": "Primary brand color used for CTAs, headers, and key UI elements"
+      },
+      "gradients": {
+        "primary_gradient": "linear-gradient(to right, #006FEE, #0050B3)",
+        "blue_gradient": "linear-gradient(135deg, #006FEE 0%, #0050B3 100%)",
+        "usage": "Headers, buttons, hero sections"
+      },
+      "secondary": {
+        "success_green": "#10B981",
+        "success_green_dark": "#059669",
+        "verified_gradient": "linear-gradient(135deg, #10B981 0%, #059669 100%)",
+        "usage": "Success states, verified badges, positive actions"
+      },
+      "neutral": {
+        "white": "#FFFFFF",
+        "gray_50": "#F9FAFB",
+        "gray_100": "#F3F4F6",
+        "gray_200": "#E5E7EB",
+        "gray_300": "#D1D5DB",
+        "gray_400": "#9CA3AF",
+        "gray_500": "#6B7280",
+        "gray_600": "#4B5563",
+        "gray_700": "#374151",
+        "gray_800": "#1F2937",
+        "gray_900": "#111827"
+      },
+      "accent": {
+        "yellow": "#FCD34D",
+        "yellow_dark": "#F59E0B",
+        "usage": "Battery icons, highlights, warnings"
+      },
+      "semantic": {
+        "error": "#EF4444",
+        "warning": "#F59E0B",
+        "info": "#3B82F6",
+        "success": "#10B981"
+      }
+    },
+    "typography": {
+      "font_family": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+      "headings": {
+        "font_family": "'Poppins', sans-serif",
+        "weights": {
+          "h1": 800,
+          "h2": 700,
+          "h3": 600,
+          "h4": 600
+        },
+        "sizes": {
+          "h1_desktop": "64px",
+          "h1_tablet": "48px",
+          "h1_mobile": "36px",
+          "h2_desktop": "42px",
+          "h2_tablet": "36px",
+          "h2_mobile": "28px",
+          "h3_desktop": "32px",
+          "h3_tablet": "28px",
+          "h3_mobile": "24px"
+        }
+      },
+      "body": {
+        "weights": {
+          "regular": 400,
+          "medium": 500,
+          "semibold": 600,
+          "bold": 700
+        },
+        "sizes": {
+          "large": "20px",
+          "regular": "16px",
+          "small": "14px",
+          "tiny": "12px"
+        }
+      }
+    }
+  },
+  
+  "products": {
+    "battery_models": [
+      {
+        "name": "FlexVolt 6Ah Battery",
+        "capacity": "6Ah",
+        "voltage": "20V/60V MAX",
+        "retail_price": 149,
+        "deposit_amount": 14.90,
+        "deposit_percentage": 10,
+        "features": [
+          "Dual voltage compatibility",
+          "Custom laser engraving",
+          "QR theft protection",
+          "2-year warranty",
+          "USA assembled"
+        ],
+        "ideal_for": "Light to medium duty tools",
+        "runtime": "Up to 4 hours continuous use"
+      },
+      {
+        "name": "FlexVolt 9Ah Battery",
+        "capacity": "9Ah",
+        "voltage": "20V/60V MAX",
+        "retail_price": 239,
+        "deposit_amount": 23.90,
+        "deposit_percentage": 10,
+        "features": [
+          "Dual voltage compatibility",
+          "Custom laser engraving",
+          "QR theft protection",
+          "2-year warranty",
+          "USA assembled",
+          "50% more runtime than 6Ah"
+        ],
+        "ideal_for": "Heavy duty tools and extended use",
+        "runtime": "Up to 6 hours continuous use",
+        "most_popular": true
+      },
+      {
+        "name": "FlexVolt 15Ah Battery",
+        "capacity": "15Ah",
+        "voltage": "20V/60V MAX",
+        "retail_price": 359,
+        "deposit_amount": 35.90,
+        "deposit_percentage": 10,
+        "features": [
+          "Dual voltage compatibility",
+          "Custom laser engraving",
+          "QR theft protection",
+          "2-year warranty",
+          "USA assembled",
+          "Maximum runtime available"
+        ],
+        "ideal_for": "All-day professional use",
+        "runtime": "Up to 10 hours continuous use"
+      }
+    ],
+    
+    "volume_discounts": [
+      {
+        "threshold": 1000,
+        "percentage": 10,
+        "description": "10% off orders over $1,000"
+      },
+      {
+        "threshold": 2500,
+        "percentage": 15,
+        "description": "15% off orders over $2,500"
+      },
+      {
+        "threshold": 5000,
+        "percentage": 20,
+        "description": "20% off orders over $5,000"
+      }
+    ],
+    
+    "customization_options": {
+      "engraving": {
+        "lines": 2,
+        "line1": {
+          "name": "Company Name",
+          "max_characters": 20,
+          "examples": ["ACME CONSTRUCTION", "BOSTON BUILDERS", "SMITH & SONS"]
+        },
+        "line2": {
+          "name": "Contact Information",
+          "max_characters": 25,
+          "examples": ["555-1234 • acme.com", "(617) 555-0123", "CALL 1-800-BUILDER"]
+        },
+        "fonts": ["Arial", "Impact", "Helvetica"],
+        "placement": "Center of battery",
+        "method": "Laser engraving",
+        "durability": "Permanent, fade-resistant"
+      },
+      "logo_upload": {
+        "enabled": false,
+        "note": "Logo feature removed for streamlined experience"
+      }
+    }
+  },
+  
+  "unique_features": {
+    "theft_protection_system": {
+      "name": "QR Code Theft Protection",
+      "description": "Every battery includes a unique QR code that links to owner information",
+      "how_it_works": [
+        "Each battery gets a unique QR code during manufacturing",
+        "QR code links to secure online database",
+        "Anyone can scan to see owner information",
+        "Deters theft and aids in recovery"
+      ],
+      "benefits": [
+        "Reduces tool theft by up to 87%",
+        "Free lifetime protection",
+        "No app required - works with any QR scanner",
+        "Instant owner verification"
+      ],
+      "demo_available": true
+    },
+    
+    "deposit_system": {
+      "name": "10% Deposit Payment System",
+      "percentage": 10,
+      "benefits": [
+        "Lock in your order with just 10% down",
+        "Remaining 90% due when batteries ship",
+        "30-day manufacturing lead time",
+        "Cancel anytime before shipping"
+      ],
+      "messaging": {
+        "primary": "Pay Just 10% Today",
+        "secondary": "Balance due when your batteries ship",
+        "trust": "Risk-free ordering with full refund option"
+      }
+    },
+    
+    "ai_design_assistant": {
+      "name": "AI-Powered Design Assistant",
+      "powered_by": "Claude AI",
+      "features": [
+        "Natural language battery customization",
+        "Smart suggestions for engraving text",
+        "Instant preview generation",
+        "Context-aware recommendations"
+      ],
+      "example_prompts": [
+        "I need batteries for my construction company",
+        "Help me design batteries for Smith Roofing",
+        "I want professional looking batteries with our phone number"
+      ]
+    },
+    
+    "360_degree_preview": {
+      "name": "360° Battery Preview",
+      "description": "Spinning video preview of actual battery",
+      "implementation": "Auto-playing MP4 video in modal",
+      "file_location": "/public/battery-spin-360.mp4"
+    }
+  },
+  
+  "user_experience": {
+    "customer_journey": [
+      {
+        "step": 1,
+        "name": "Discovery",
+        "description": "User lands on site or AI design page",
+        "key_elements": ["Value proposition", "Trust indicators", "Clear CTAs"]
+      },
+      {
+        "step": 2,
+        "name": "Design",
+        "description": "Customize battery with AI or manual input",
+        "key_elements": ["Real-time preview", "Intuitive controls", "Design suggestions"]
+      },
+      {
+        "step": 3,
+        "name": "Preview Protection",
+        "description": "See theft protection demo",
+        "key_elements": ["QR scan simulation", "Owner info display", "360° video"]
+      },
+      {
+        "step": 4,
+        "name": "Select Quantity",
+        "description": "Choose battery model and quantity",
+        "key_elements": ["Volume discounts", "Runtime comparison", "Stock status"]
+      },
+      {
+        "step": 5,
+        "name": "Checkout",
+        "description": "Complete purchase with 10% deposit",
+        "key_elements": ["Secure payment", "Order summary", "Delivery timeline"]
+      }
+    ],
+    
+    "key_pages": {
+      "ai_design": {
+        "path": "/customer/design-with-ai",
+        "purpose": "Natural language battery customization",
+        "conversion_elements": ["AI chat", "Live preview", "Protection demo"]
+      },
+      "manual_engraving": {
+        "path": "/customer/engraving",
+        "purpose": "Direct battery customization",
+        "conversion_elements": ["Canvas preview", "Text controls", "Real-time updates"]
+      },
+      "checkout": {
+        "path": "/customer/checkout",
+        "purpose": "Complete purchase",
+        "conversion_elements": ["10% deposit messaging", "Trust badges", "Stripe integration"]
+      },
+      "battery_scan_demo": {
+        "path": "/battery-scan-demo",
+        "purpose": "Show theft protection in action",
+        "conversion_elements": ["QR simulation", "Owner display", "360° video"]
+      }
+    }
+  },
+  
+  "design_system": {
+    "components": {
+      "buttons": {
+        "primary": {
+          "background": "#006FEE",
+          "hover_background": "#0050B3",
+          "text_color": "#FFFFFF",
+          "padding": "12px 24px",
+          "border_radius": "8px",
+          "font_weight": 600,
+          "transitions": "all 0.3s ease",
+          "hover_effects": "translateY(-2px), shadow increase"
+        },
+        "secondary": {
+          "background": "#FFFFFF",
+          "border": "2px solid #006FEE",
+          "text_color": "#006FEE",
+          "hover_background": "#F0F9FF"
+        },
+        "success": {
+          "background": "#10B981",
+          "hover_background": "#059669",
+          "usage": "Checkout, confirmation actions"
+        }
+      },
+      
+      "cards": {
+        "standard": {
+          "background": "#FFFFFF",
+          "border": "2px solid #E6F4FF",
+          "border_radius": "12px",
+          "padding": "24px",
+          "shadow": "0 4px 6px rgba(0, 0, 0, 0.05)",
+          "hover_shadow": "0 10px 15px rgba(0, 0, 0, 0.1)"
+        },
+        "elevated": {
+          "shadow": "0 10px 40px rgba(0, 0, 0, 0.08)",
+          "usage": "Important content, modals"
+        }
+      },
+      
+      "inputs": {
+        "standard": {
+          "background": "#F9FAFB",
+          "border": "2px solid #E5E7EB",
+          "border_radius": "8px",
+          "padding": "12px 16px",
+          "focus_border": "#006FEE",
+          "focus_shadow": "0 0 0 3px rgba(0, 111, 238, 0.1)"
+        }
+      },
+      
+      "badges": {
+        "verified": {
+          "background": "linear-gradient(135deg, #10B981 0%, #059669 100%)",
+          "text_color": "#FFFFFF",
+          "padding": "8px 16px",
+          "border_radius": "100px",
+          "usage": "Trust indicators, verification status"
+        }
+      }
+    },
+    
+    "spacing_system": {
+      "base_unit": 4,
+      "scale": [0, 4, 8, 12, 16, 20, 24, 32, 40, 48, 56, 64, 80, 96, 128],
+      "usage": "All spacing uses multiples of 4px"
+    },
+    
+    "responsive_breakpoints": {
+      "mobile": "max-width: 640px",
+      "tablet": "641px - 1024px",
+      "desktop": "min-width: 1025px"
+    },
+    
+    "animation_patterns": {
+      "standard_transition": "all 0.3s ease",
+      "hover_lift": "translateY(-4px)",
+      "button_scale": "scale(1.05)",
+      "fade_in": "opacity 0 to 1 over 0.3s",
+      "modal_entrance": "scale from 0.95 to 1 with opacity"
+    }
+  },
+  
+  "marketing_messaging": {
+    "value_propositions": {
+      "primary": "Never Lose Another Battery to Theft",
+      "secondary": "Professional Power Tools. Protected.",
+      "supporting": [
+        "87% reduction in tool theft",
+        "Free lifetime protection",
+        "No monthly fees",
+        "Works with all 20V/60V tools"
+      ]
+    },
+    
+    "trust_indicators": [
+      "🇺🇸 USA Assembled",
+      "✓ 2-Year Warranty",
+      "🔒 Secure Checkout",
+      "⚡ 30-Day Lead Time",
+      "💰 10% Deposit Only",
+      "🛡️ Money-Back Guarantee"
+    ],
+    
+    "urgency_messaging": {
+      "volume_discount": "Save up to 20% on bulk orders",
+      "limited_time": "Lock in current pricing with 10% deposit",
+      "social_proof": "Join 10,000+ contractors protecting their tools"
+    },
+    
+    "unique_selling_points": [
+      {
+        "headline": "QR Theft Protection",
+        "description": "Every battery includes free lifetime theft protection",
+        "icon": "shield"
+      },
+      {
+        "headline": "Custom Engraving",
+        "description": "Your company name laser-engraved permanently",
+        "icon": "edit"
+      },
+      {
+        "headline": "10% Deposit",
+        "description": "Order now, pay the rest when batteries ship",
+        "icon": "dollar-sign"
+      },
+      {
+        "headline": "USA Made",
+        "description": "Assembled in the USA with quality guarantee",
+        "icon": "flag"
+      }
+    ],
+    
+    "customer_testimonials": [
+      {
+        "name": "Mike Johnson",
+        "company": "Johnson Construction",
+        "quote": "Haven't lost a single battery since switching to Battery Department",
+        "rating": 5
+      },
+      {
+        "name": "Sarah Chen",
+        "company": "Chen Electric",
+        "quote": "The QR protection actually works - got my stolen battery back!",
+        "rating": 5
+      },
+      {
+        "name": "Tom Rodriguez",
+        "company": "Rodriguez Roofing",
+        "quote": "Best investment for our crew. The engraving looks professional.",
+        "rating": 5
+      }
+    ]
+  },
+  
+  "technical_specifications": {
+    "battery_technology": {
+      "type": "Lithium-Ion",
+      "chemistry": "Premium Li-ion cells",
+      "voltage_system": "FlexVolt Dual Voltage",
+      "compatibility": "Works with all 20V MAX and 60V MAX tools",
+      "charge_cycles": "2000+ cycles",
+      "operating_temp": "-4°F to 122°F",
+      "storage_temp": "32°F to 86°F"
+    },
+    
+    "engraving_specifications": {
+      "method": "Laser engraving",
+      "depth": "0.5mm",
+      "contrast": "High contrast black on yellow",
+      "location": "Center of battery face",
+      "size": {
+        "line1": "8mm height",
+        "line2": "6mm height"
+      },
+      "durability": "Permanent, chemical resistant"
+    },
+    
+    "qr_code_system": {
+      "technology": "QR Code Version 3",
+      "size": "25mm x 25mm",
+      "error_correction": "Level H (30%)",
+      "data_encoded": "Unique battery ID",
+      "redirect_url": "https://batterydpt.com/scan/[batteryID]",
+      "database": "Secure cloud-hosted owner registry"
+    },
+    
+    "packaging": {
+      "individual": "Protective plastic case",
+      "bulk": "Reinforced shipping boxes",
+      "branding": "Custom Battery Department packaging",
+      "included": [
+        "Battery with custom engraving",
+        "QR code sticker (pre-applied)",
+        "Quick start guide",
+        "Warranty card"
+      ]
+    }
+  },
+  
+  "api_endpoints": {
+    "chat": {
+      "design_assistant": "/api/chat/design-claude",
+      "general_chat": "/api/chat/claude",
+      "health_check": "/api/chat/design-claude/health"
+    },
+    
+    "cart": {
+      "get_cart": "GET /api/cart",
+      "add_item": "POST /api/cart",
+      "update_item": "PATCH /api/cart/items/[itemId]",
+      "remove_item": "DELETE /api/cart/items/[itemId]"
+    },
+    
+    "battery": {
+      "customize": "POST /api/battery/customize",
+      "preview": "GET /api/battery/preview/[id]",
+      "validate_text": "POST /api/battery/validate"
+    },
+    
+    "orders": {
+      "create": "POST /api/orders/create",
+      "status": "GET /api/orders/[orderId]",
+      "list": "GET /api/orders"
+    },
+    
+    "tracking": {
+      "scan": "GET /battery-scan-demo",
+      "parameters": {
+        "company": "Company name",
+        "phone": "Phone number",
+        "email": "Email address",
+        "batteryId": "Unique battery ID",
+        "demo": "true for demo mode"
+      }
+    }
+  },
+  
+  "database_schema": {
+    "key_models": [
+      {
+        "name": "Battery",
+        "fields": ["id", "model", "capacity", "price", "depositAmount"]
+      },
+      {
+        "name": "Customization",
+        "fields": ["id", "line1Text", "line2Text", "fontStyle", "batteryId", "userId"]
+      },
+      {
+        "name": "Order",
+        "fields": ["id", "userId", "total", "depositPaid", "status", "items"]
+      },
+      {
+        "name": "CartItem",
+        "fields": ["id", "batteryId", "customizationId", "quantity", "price"]
+      },
+      {
+        "name": "User",
+        "fields": ["id", "email", "company", "phone", "orders"]
+      }
+    ]
+  },
+  
+  "integrations": {
+    "payment": {
+      "provider": "Stripe",
+      "features": [
+        "Secure checkout",
+        "10% deposit handling",
+        "Apple Pay support",
+        "Google Pay support",
+        "Card payment",
+        "Invoice generation"
+      ]
+    },
+    
+    "ai": {
+      "provider": "Anthropic Claude",
+      "model": "Claude 3",
+      "features": [
+        "Natural language processing",
+        "Design suggestions",
+        "Context awareness",
+        "Multi-turn conversations"
+      ]
+    },
+    
+    "analytics": {
+      "providers": ["Google Analytics", "Custom tracking"],
+      "events": [
+        "Page views",
+        "Design interactions",
+        "Cart additions",
+        "Checkout completions",
+        "QR scan demos"
+      ]
+    },
+    
+    "email": {
+      "provider": "SendGrid",
+      "templates": [
+        "Order confirmation",
+        "Deposit receipt",
+        "Shipping notification",
+        "Design saved",
+        "Abandoned cart"
+      ]
+    }
+  },
+  
+  "seo_keywords": [
+    "custom battery engraving",
+    "FlexVolt batteries",
+    "construction tool batteries",
+    "theft proof batteries",
+    "contractor batteries",
+    "20V 60V MAX batteries",
+    "DeWalt compatible batteries",
+    "bulk battery orders",
+    "QR code tool protection",
+    "laser engraved batteries"
+  ],
+  
+  "content_style_guide": {
+    "tone_of_voice": {
+      "primary": "Professional yet approachable",
+      "characteristics": [
+        "Confident",
+        "Helpful",
+        "Technical when needed",
+        "Action-oriented",
+        "Trustworthy"
+      ]
+    },
+    
+    "writing_principles": [
+      "Lead with benefits, not features",
+      "Use active voice",
+      "Keep sentences concise",
+      "Include social proof",
+      "Create urgency without pressure",
+      "Focus on contractor pain points"
+    ],
+    
+    "common_phrases": {
+      "cta_primary": "Design Your Batteries",
+      "cta_secondary": "See Protection Demo",
+      "trust": "Protected by Battery Department",
+      "urgency": "Lock in your order with 10% deposit",
+      "value": "Save up to 20% on bulk orders"
+    },
+    
+    "avoid": [
+      "Jargon without explanation",
+      "Overpromising",
+      "Aggressive sales tactics",
+      "Generic marketing speak",
+      "Technical specs without context"
+    ]
+  },
+  
+  "mobile_experience": {
+    "priorities": [
+      "Touch-friendly controls",
+      "Fast load times",
+      "Simplified navigation",
+      "Thumb-reachable CTAs",
+      "Readable text without zoom"
+    ],
+    
+    "specific_optimizations": {
+      "battery_preview": "Centered and scaled for mobile",
+      "text_input": "Large touch targets",
+      "checkout": "Single column layout",
+      "modals": "Full screen on mobile",
+      "navigation": "Hamburger menu"
+    },
+    
+    "performance_targets": {
+      "first_contentful_paint": "< 1.5s",
+      "time_to_interactive": "< 3.5s",
+      "cumulative_layout_shift": "< 0.1",
+      "largest_contentful_paint": "< 2.5s"
+    }
+  },
+  
+  "customer_support": {
+    "channels": [
+      {
+        "type": "Email",
+        "address": "support@batterydpt.com",
+        "response_time": "24 hours"
+      },
+      {
+        "type": "Phone",
+        "number": "1-800-BATTERY",
+        "hours": "Mon-Fri 9AM-5PM EST"
+      },
+      {
+        "type": "Chat",
+        "availability": "Business hours",
+        "ai_assisted": true
+      }
+    ],
+    
+    "common_questions": [
+      {
+        "question": "How does the 10% deposit work?",
+        "answer": "Pay 10% now to lock in your order. The remaining 90% is charged when your batteries ship in 30 days."
+      },
+      {
+        "question": "Can I cancel my order?",
+        "answer": "Yes, you can cancel anytime before shipping for a full refund of your deposit."
+      },
+      {
+        "question": "How does QR protection work?",
+        "answer": "Each battery has a unique QR code. Anyone who scans it sees your company info, deterring theft."
+      },
+      {
+        "question": "Are these genuine FlexVolt batteries?",
+        "answer": "Yes, these are genuine FlexVolt compatible batteries assembled in the USA."
+      }
+    ]
+  },
+  
+  "conversion_optimization": {
+    "checkout_flow": {
+      "steps": [
+        "Design review",
+        "Battery selection",
+        "Quantity selection",
+        "Contact information",
+        "Payment (10% deposit)",
+        "Order confirmation"
+      ],
+      "optimizations": [
+        "Progress indicator",
+        "Auto-save form data",
+        "Guest checkout option",
+        "Express checkout buttons",
+        "Clear pricing breakdown",
+        "Trust badges throughout"
+      ]
+    },
+    
+    "cart_features": {
+      "persistence": "LocalStorage for 30 days",
+      "recovery": "Email reminders for abandoned carts",
+      "upsells": "Volume discount notifications",
+      "preview": "Visual battery preview in cart",
+      "editing": "Edit design from cart"
+    },
+    
+    "social_proof_elements": [
+      "Real-time order notifications",
+      "Customer review stars",
+      "Contractor testimonials",
+      "Trust pilot integration",
+      "Case studies",
+      "Logo wall of customers"
+    ],
+    
+    "urgency_tactics": {
+      "ethical_urgency": [
+        "Volume discount tiers visible",
+        "30-day manufacturing time clear",
+        "Limited customization slots",
+        "Price lock with deposit"
+      ],
+      "avoid": [
+        "Fake scarcity",
+        "Countdown timers",
+        "High-pressure tactics"
+      ]
+    }
+  },
+  
+  "competitive_advantages": {
+    "vs_generic_batteries": [
+      "Custom engraving included",
+      "QR theft protection",
+      "Direct from manufacturer pricing",
+      "Bulk order discounts",
+      "USA assembly"
+    ],
+    
+    "vs_other_custom_options": [
+      "No minimum order quantity",
+      "10% deposit vs full payment",
+      "Free design tool",
+      "AI design assistance",
+      "Lifetime theft protection"
+    ],
+    
+    "unique_features": [
+      "360° battery preview",
+      "Real-time engraving preview",
+      "QR tracking demo",
+      "Natural language design",
+      "Instant quote calculator"
+    ]
+  },
+  
+  "implementation_details": {
+    "tech_stack": {
+      "frontend": {
+        "framework": "Next.js 14.2.30",
+        "ui_library": "React 18",
+        "styling": "Tailwind CSS",
+        "animations": "Framer Motion",
+        "state": "Zustand",
+        "language": "TypeScript"
+      },
+      "backend": {
+        "runtime": "Node.js",
+        "framework": "Next.js API Routes",
+        "database": "PostgreSQL",
+        "orm": "Prisma",
+        "authentication": "NextAuth.js"
+      },
+      "infrastructure": {
+        "hosting": "Vercel",
+        "cdn": "Vercel Edge Network",
+        "database_hosting": "Supabase",
+        "file_storage": "Vercel Blob"
+      }
+    },
+    
+    "key_components": {
+      "battery_preview": {
+        "technology": "HTML5 Canvas",
+        "features": ["Real-time text rendering", "Image compositing", "Export to image"],
+        "files": [
+          "FlexVoltCanvasPreview.tsx",
+          "EnhancedBatteryPreview.tsx"
+        ]
+      },
+      "tracking_modal": {
+        "technology": "React Portal + Iframe",
+        "features": ["Dynamic data injection", "Responsive design", "360° video"],
+        "files": [
+          "BatteryTrackingDemoModal.tsx",
+          "BatteryScanLandingPage.tsx"
+        ]
+      },
+      "ai_chat": {
+        "technology": "Streaming AI responses",
+        "features": ["Context awareness", "Design suggestions", "Natural language"],
+        "files": [
+          "AIDesignChat.tsx",
+          "/api/chat/design-claude"
+        ]
+      }
+    }
+  },
+  
+  "business_metrics": {
+    "key_performance_indicators": [
+      "Conversion rate (visitor to deposit)",
+      "Average order value",
+      "Cart abandonment rate",
+      "Customer lifetime value",
+      "Design completion rate",
+      "QR demo engagement"
+    ],
+    
+    "target_metrics": {
+      "conversion_rate": "3-5%",
+      "average_order_value": "$500-1500",
+      "cart_abandonment": "< 65%",
+      "design_completion": "> 80%",
+      "demo_engagement": "> 40%"
+    },
+    
+    "growth_strategies": [
+      "SEO optimization for contractor keywords",
+      "Referral program for existing customers",
+      "Trade show presence",
+      "Partnership with tool manufacturers",
+      "Content marketing for contractors"
+    ]
+  },
+  
+  "future_roadmap": {
+    "planned_features": [
+      {
+        "feature": "Mobile app",
+        "timeline": "Q2 2025",
+        "benefits": ["Offline design", "Push notifications", "Quick reorder"]
+      },
+      {
+        "feature": "AR battery preview",
+        "timeline": "Q3 2025",
+        "benefits": ["See battery on actual tools", "Size comparison", "Enhanced engagement"]
+      },
+      {
+        "feature": "Fleet management",
+        "timeline": "Q4 2025",
+        "benefits": ["Track all batteries", "Usage analytics", "Theft reports"]
+      },
+      {
+        "feature": "Subscription model",
+        "timeline": "Q1 2026",
+        "benefits": ["Predictable revenue", "Customer retention", "Battery refresh program"]
+      }
+    ],
+    
+    "expansion_plans": [
+      "Additional battery models",
+      "International shipping",
+      "Other tool categories",
+      "White label solutions",
+      "API for bulk orders"
+    ]
+  },
+  
+  "training_examples": {
+    "user_interactions": [
+      {
+        "user": "I need batteries for my construction company",
+        "ai_response": "I'll help you design custom batteries for your construction company! What's your company name?",
+        "context": "Natural language design flow"
+      },
+      {
+        "user": "Can I see how the QR code works?",
+        "ai_response": "Absolutely! Click 'See Your Battery's Protection' to see exactly what happens when someone scans your battery.",
+        "context": "Demonstrating protection system"
+      },
+      {
+        "user": "How much for 50 batteries?",
+        "ai_response": "For 50 batteries, you'll qualify for our 20% bulk discount! Here's the breakdown: [pricing details]",
+        "context": "Volume pricing inquiry"
+      }
+    ],
+    
+    "design_patterns": [
+      {
+        "pattern": "Progressive disclosure",
+        "example": "Show basic options first, advanced options on request",
+        "implementation": "AI chat guides through options naturally"
+      },
+      {
+        "pattern": "Immediate feedback",
+        "example": "Live preview updates as user types",
+        "implementation": "Canvas re-renders on every keystroke"
+      },
+      {
+        "pattern": "Error prevention",
+        "example": "Validate text length before engraving",
+        "implementation": "Real-time character counting and warnings"
+      }
+    ]
+  },
+  
+  "quality_standards": {
+    "code_quality": [
+      "TypeScript for type safety",
+      "ESLint for code consistency",
+      "Prettier for formatting",
+      "Component testing with Jest",
+      "E2E testing with Playwright"
+    ],
+    
+    "design_quality": [
+      "Consistent spacing (4px grid)",
+      "AA accessibility compliance",
+      "Mobile-first responsive design",
+      "60fps animations",
+      "Optimized images and videos"
+    ],
+    
+    "content_quality": [
+      "Clear, benefit-focused copy",
+      "Consistent brand voice",
+      "SEO-optimized metadata",
+      "Alt text for all images",
+      "Structured data markup"
+    ]
+  },
+  
+  "security_considerations": {
+    "data_protection": [
+      "HTTPS everywhere",
+      "Encrypted database",
+      "Secure API endpoints",
+      "Input sanitization",
+      "XSS prevention"
+    ],
+    
+    "payment_security": [
+      "PCI compliance via Stripe",
+      "No card data stored",
+      "Tokenized payments",
+      "3D Secure support",
+      "Fraud detection"
+    ],
+    
+    "user_privacy": [
+      "GDPR compliant",
+      "Clear privacy policy",
+      "Data minimization",
+      "Right to deletion",
+      "Transparent data use"
+    ]
+  },
+  
+  "documentation": {
+    "available_docs": [
+      "BATTERY_DASHBOARD_TRAINING_GUIDE.md",
+      "DESIGN_SYSTEM.md",
+      "BATTERY_TRACKING_MODAL_GUIDE.md",
+      "API_DOCUMENTATION.md",
+      "DEPLOYMENT_GUIDE.md"
+    ],
+    
+    "code_comments": {
+      "style": "JSDoc for functions",
+      "requirements": "Document complex logic",
+      "examples": "Include usage examples"
+    },
+    
+    "maintenance": {
+      "update_frequency": "Weekly",
+      "review_process": "PR reviews required",
+      "version_control": "Git with semantic versioning"
+    }
+  }
+}
